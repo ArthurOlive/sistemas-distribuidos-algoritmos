@@ -1,4 +1,4 @@
-package java.com.client;
+package com.client;
 
 public class Client {
 

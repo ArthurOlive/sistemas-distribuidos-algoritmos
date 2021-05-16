@@ -1,5 +1,4 @@
-  
-package java.com.model;
+package com.model;
 
 import org.json.simple.JSONObject;
 
