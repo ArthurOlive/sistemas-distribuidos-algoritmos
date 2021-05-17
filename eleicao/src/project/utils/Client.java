@@ -2,7 +2,6 @@ package project.utils;
 
 import java.io.DataOutputStream;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class Client extends ThreadBase {
 
@@ -23,6 +22,7 @@ public class Client extends ThreadBase {
             byte[] bufferSend = buildByteMessage(message);
             streamOut.writeInt(bufferSend.length);
             streamOut.write(bufferSend, 0, bufferSend.length);
+            socket.close();
 
         } catch (Exception e) {
             System.err.println(e.getMessage());

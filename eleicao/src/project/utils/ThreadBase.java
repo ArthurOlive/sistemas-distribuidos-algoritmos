@@ -1,7 +1,5 @@
 package project.utils;
 
-import java.nio.ByteBuffer;
-
 public abstract class ThreadBase implements Runnable {
     public final String ELEICAO = "ELEICAO";
     public final String COORDENADOR = "COORDENADOR";
