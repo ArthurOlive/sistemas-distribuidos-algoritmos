@@ -2,7 +2,6 @@ package project.utils;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.nio.ByteBuffer;
 
 public class ThredReciver extends ThreadBase {
     private int from;
@@ -24,48 +23,24 @@ public class ThredReciver extends ThreadBase {
                 DatagramPacket datagramRecive = new DatagramPacket(bufferRecive, bufferRecive.length);
                 datagramSocket.receive(datagramRecive);
                 bufferRecive = datagramRecive.getData();
-                message = getMessageByByteMessage(bufferRecive);
+                System.out.println(getMessageByByteMessage(bufferRecive));
 
                 // callback
-                int idCallBack = getIdByByteMessage(bufferRecive);
-                if (idCallBack == id) {
-                    System.out.println("Menssagem final: " + message);
-                } else {
-                    String response = actionMessage(message, id);
-                    System.out.println(response);
+                Thread.sleep(1000);           
+                byte[] bufferSend = buildByteMessage(id);
+                DatagramPacket datagramSend = new DatagramPacket(bufferSend, bufferSend.length,
+                        datagramRecive.getAddress(), to);
 
-                    byte[] bufferSend = buildByteMessage(idCallBack, response);
-                    DatagramPacket datagramSend = new DatagramPacket(bufferSend, bufferSend.length,
-                            datagramRecive.getAddress(), to);
+                datagramSocket.send(datagramSend);
 
-                    datagramSocket.send(datagramSend);
-                }
-
-            } while (!message.contains("close"));
-
-            datagramSocket.close();
+            } while (true);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
 
     }
 
-    private int getIdByByteMessage(byte[] buffer) {
-        return ByteBuffer.wrap(buffer).getInt();
-    }
-
     private String getMessageByByteMessage(byte[] buffer) {
-        int realSize = 0;
-        for (int i = 0; i < buffer.length - 4 && buffer[i + 4] != 0; i++) {
-            realSize++;
-        }
-
-        byte[] bytesMessage = new byte[realSize];
-
-        for (int i = 0; i < bytesMessage.length; i++) {
-            bytesMessage[i] = buffer[i + 4];
-        }
-
-        return new String(bytesMessage);
+        return new String(buffer);
     }
 }
