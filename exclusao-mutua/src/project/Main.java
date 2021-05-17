@@ -8,12 +8,12 @@ import project.utils.Manager;
 public class Main{
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
         var manager = new Manager();
-        var p1 = new Process();
-        var p2 = new Process();
-        var p3 = new Process();
+        var p1 = new Thread(new Process(manager));
+        var p2 = new Thread(new Process(manager));
+        var p3 = new Thread(new Process(manager));
 
-        p1.request(manager);
-        p2.request(manager);
-        p3.request(manager);
+        p1.start();
+        p2.start();
+        p3.start();
     }
 }

@@ -2,8 +2,8 @@ package project;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 
-import project.utils.Recurso;
-import project.utils.RecursoImp;
+import project.utils.Resource;
+import project.utils.ResourceImp;
 
 public class RecursoServer {
     public RecursoServer(){
@@ -12,7 +12,7 @@ public class RecursoServer {
             System.setProperty("java.rmi.server.hostname", "localhost");
             LocateRegistry.createRegistry(1099);
 
-            Recurso res = new RecursoImp();
+            Resource res = new ResourceImp();
 
             Naming.bind("RecursoService", res);
 

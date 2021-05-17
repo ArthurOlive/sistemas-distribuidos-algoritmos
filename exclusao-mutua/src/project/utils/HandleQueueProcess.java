@@ -8,11 +8,12 @@ import java.util.Queue;
 
 public class HandleQueueProcess implements Runnable {
     private Queue<Process> queue;
-    private Recurso resourse;
+    private Resource resourse;
     HandleQueueProcess(Queue<Process> queue) throws MalformedURLException, RemoteException, NotBoundException{
         this.queue  = queue;    
-        resourse = (Recurso) Naming.lookup("//localhost:1099/RecursoService");  
+        resourse = (Resource) Naming.lookup("//localhost:1099/RecursoService");  
     }
+    
     @Override
     public void run() {
         while(true){
@@ -21,7 +22,7 @@ public class HandleQueueProcess implements Runnable {
                     if(resourse.isSemaphoro()){
                         var process = queue.poll();
                         System.out.println("[LOG]Processo " + process.getId() + " esta acessando o recurso");
-                        resourse.entrar(process.getId());
+                        resourse.enter(process.getId());
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
