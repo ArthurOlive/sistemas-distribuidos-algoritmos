@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import com.model.Clock;
 import com.model.Response;
 import com.model.TimerSicronize;
 import com.service.parse.ResponseParse;
@@ -21,48 +22,37 @@ public class Client {
 
     public static void main(String [] args) {
 
-        LocalDateTime clock = LocalDateTime.now();
-        clock = clock.plusMinutes(Math.round(30) + 1);
+        LocalDateTime timeClock = LocalDateTime.now();
+        timeClock = timeClock.plusMinutes(Math.round(30) + 1);
+
+        Clock clock = new Clock();
+        clock.setTime(timeClock);
 
         LocalDateTime date = LocalDateTime.now();
-        
-        System.out.println(clock.atZone(ZoneId.of("Etc/UTC")).toInstant().toEpochMilli());
-        System.out.println(date.atZone(ZoneId.of("Etc/UTC")).toInstant().toEpochMilli());
 
         try {
 
             System.out.println("Client is online...");
-            System.out.println("Initial time client: " + clock);
+            System.out.println("Initial time client: " + clock.getTime());
+
+            ServerSocket serverSocket = new ServerSocket(3000);
 
             ClockTime cronometro    = new ClockTime(clock);
             Thread threadCronometro = new Thread(cronometro);
             threadCronometro.start();
 
-            ServerSocket serverSocket = new ServerSocket(3000);
+            Sender sender = new Sender(clock);
+            Thread threadSender = new Thread(sender);
+            threadSender.start();
 
             while (!serverSocket.isClosed()) {
 
                 Socket clientRequest = serverSocket.accept();
+                Receiver receiver = new Receiver(clientRequest, clock);
 
-                try {
+                Thread thread = new Thread(receiver);
+                thread.start();
 
-                    TimerSicronize time = new TimerSicronize();
-                    time.setTime(clock);
-                    
-                    TimeSicronizeParse parse = new TimeSicronizeParse();
-                    ResponseParse parseResp = new ResponseParse();
-                    
-                    Response response = new Response(200, null);
-               
-                    response.setData((JSONObject) (new JSONParser()).parse(parse.stringfy(time)));
-
-                    DataOutputStream streamOut = new DataOutputStream(clientRequest.getOutputStream());
-                    streamOut.writeUTF(parseResp.stringfy(response));
-
-                } catch (ParseException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
             }
 
             threadCronometro.interrupt();

@@ -1,4 +1,4 @@
-package com.server;
+package com.client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,24 +16,26 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class Middleware implements Runnable{
+public class Receiver implements Runnable {
 
-    private Socket socketClient;
+    private Socket connection;
     private Clock clock;
     private String [] resquest;
 
-    public Middleware(Socket socketClient, Clock clock) {
-        this.socketClient = socketClient;
+    public Receiver(Socket connection, Clock clock) {
+        this.connection = connection;
         this.clock = clock;
     }
 
     @Override
     public void run() {
-    
+
+        TimeSicronizeParse parse = new TimeSicronizeParse();
+        ResponseParse parseResp = new ResponseParse();
+
         try {
-            TimeSicronizeParse parserTime = new TimeSicronizeParse();
-            DataInputStream streamIn = new DataInputStream(socketClient.getInputStream());
-            DataOutputStream streamOut = new DataOutputStream(socketClient.getOutputStream());
+            DataInputStream streamIn = new DataInputStream(connection.getInputStream());
+            DataOutputStream streamOut = new DataOutputStream(connection.getOutputStream());
 
             resquest = streamIn.readUTF().split("::");
 
@@ -41,26 +43,29 @@ public class Middleware implements Runnable{
 
             String router = resquest[0];
             JSONObject param = (JSONObject) (new JSONParser()).parse(resquest[1]);
-
-            Response response = new Response(200, new JSONObject());
-
+            
+            Response response = null;
+        
+        
             switch (router) {
                 case "getTime":
-                    TimerSicronize timer = parserTime.parser(resquest[1]);
 
-                    System.out.println(timer.getTime());
-                    
-                    
+                    TimerSicronize time = new TimerSicronize();
+                    time.setTime(clock.getTime());
+                    streamOut.writeUTF(parse.stringfy(time));
                     break;
+
+                case "setTime":
+
+                    break;
+
                 default:
                     JSONObject data = new JSONObject();
                     data.put("message", "caminho não encontrado");
                     response = new Response(404, data);
                     break;
             }
-            
-            streamOut.writeUTF(ResponseParse.stringfy(response));
-        
+
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

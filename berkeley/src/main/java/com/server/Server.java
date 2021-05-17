@@ -11,6 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.time.ZoneOffset;
 
+import com.model.Clock;
 import com.model.TimerSicronize;
 import com.service.parse.TimeSicronizeParse;
 import com.service.utils.ClockTime;
@@ -19,22 +20,16 @@ public class Server {
 
     public static void main(String [] args) {
         
-        LocalDateTime clock = LocalDateTime.now();
-        clock = clock.plusMinutes(Math.round(30) + 1);
+        LocalDateTime time = LocalDateTime.now();
+        time = time.plusMinutes(Math.round(30) + 1);
 
-        LocalDateTime date = LocalDateTime.now();
-        
-        System.out.println(clock.atZone(ZoneId.of("Etc/UTC")).toInstant().toEpochMilli());
-        System.out.println(date.atZone(ZoneId.of("Etc/UTC")).toInstant().toEpochMilli());
-
-        //time.setTime(date);
-
-        //System.out.println(parse.stringfy(time));
+        Clock clock = new Clock();
+        clock.setTime(time);
 
         try {
 
             System.out.println("Server is online...");
-            System.out.println("Initial time server: " + clock);
+            System.out.println("Initial time server: " + clock.getTime());
 
             ClockTime cronometro    = new ClockTime(clock);
             Thread threadCronometro = new Thread(cronometro);
@@ -43,6 +38,7 @@ public class Server {
             ServerSocket serverSocket = new ServerSocket(8080);
 
             while (!serverSocket.isClosed()) {
+
                 Socket clientRequest = serverSocket.accept();
                 Middleware midd = new Middleware(clientRequest, clock);
     

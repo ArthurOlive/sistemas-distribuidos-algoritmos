@@ -7,11 +7,19 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch Client",
+            "request": "launch",
+            "mainClass": "com.client.Client",
+            "projectName": "berkeley",
+            "console": "externalTerminal"
+        },
+        {
+            "type": "java",
             "name": "Launch Server",
             "request": "launch",
             "mainClass": "com.server.Server",
             "projectName": "berkeley",
             "console": "externalTerminal"
-        },
+        }
     ]
 }

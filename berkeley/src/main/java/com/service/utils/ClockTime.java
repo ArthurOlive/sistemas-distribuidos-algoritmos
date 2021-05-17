@@ -2,11 +2,13 @@ package com.service.utils;
 
 import java.time.LocalDateTime;
 
+import com.model.Clock;
+
 public class ClockTime implements Runnable {
 
-    private LocalDateTime clock;
+    private Clock clock;
 
-    public ClockTime (LocalDateTime clock) {
+    public ClockTime (Clock clock) {
         this.clock = clock; 
     } 
 
@@ -17,7 +19,8 @@ public class ClockTime implements Runnable {
             
             try {
                 Thread.sleep(1000);
-                clock = clock.plusSeconds(1);
+                clock.setTime(clock.getTime().plusSeconds(1));
+                System.out.println("Time change:" + clock.getTime());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
