@@ -1,42 +1,32 @@
 package project.utils;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.net.Socket;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
 
-public class Server extends ThreadBase {
+public class ThredReciver extends ThreadBase {
+    private int from;
     private int to;
-    private Socket socketFrom;
-    static private Socket socketTo;
-    static boolean alreadyConectTo = false;
 
-    public Server(int id, int to, Socket socketFrom) {
+    public ThredReciver(int id, int from, int to) {
         super(id);
+        this.from = from;
         this.to = to;
-        this.socketFrom = socketFrom;
     }
 
     @Override
     public void run() {
         try {
-            DataInputStream streamIn = new DataInputStream(socketFrom.getInputStream());
-
-            while (socketTo == null) {
-                try {
-                    socketTo = new Socket("localhost", to);
-                } catch (Exception e) {
-                    // TODO: handle exception
-                }
-            }
-            DataOutputStream streamOut = new DataOutputStream(socketTo.getOutputStream());
-
-            while (!message.contains("close")) {
-                byte[] bufferRecive = new byte[streamIn.readInt()];
-                streamIn.readFully(bufferRecive);
+            DatagramSocket datagramSocket = new DatagramSocket(from);
+            byte[] bufferRecive = new byte[1024];
+            do {
+                // recive
+                DatagramPacket datagramRecive = new DatagramPacket(bufferRecive, bufferRecive.length);
+                datagramSocket.receive(datagramRecive);
+                bufferRecive = datagramRecive.getData();
                 message = getMessageByByteMessage(bufferRecive);
 
-                // callback:
+                // callback
                 int idCallBack = getIdByByteMessage(bufferRecive);
                 if (idCallBack == id) {
                     System.out.println("Menssagem final: " + message);
@@ -45,15 +35,19 @@ public class Server extends ThreadBase {
                     System.out.println(response);
 
                     byte[] bufferSend = buildByteMessage(idCallBack, response);
-                    streamOut.writeInt(bufferSend.length);
-                    streamOut.write(bufferSend, 0, bufferSend.length);
+                    DatagramPacket datagramSend = new DatagramPacket(bufferSend, bufferSend.length,
+                            datagramRecive.getAddress(), to);
+
+                    datagramSocket.send(datagramSend);
                 }
 
-            }
+            } while (!message.contains("close"));
 
+            datagramSocket.close();
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
+
     }
 
     private int getIdByByteMessage(byte[] buffer) {

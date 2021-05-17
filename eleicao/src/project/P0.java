@@ -5,6 +5,6 @@ import project.utils.Process;
 
 public class P0 {
     public static void main(String[] args) throws IOException {
-        new Process(0, 8080, 8081);
+        new Process(0, 8080, 8081, true);
     }
 }
