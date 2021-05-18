@@ -20,7 +20,7 @@ public class ClockTime implements Runnable {
             try {
                 Thread.sleep(1000);
                 clock.setTime(clock.getTime().plusSeconds(1));
-                System.out.println("Time change:" + clock.getTime());
+                //System.out.println("Time change:" + clock.getTime());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

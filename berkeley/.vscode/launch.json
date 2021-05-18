@@ -7,6 +7,30 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch c3",
+            "request": "launch",
+            "mainClass": "com.client.c3",
+            "projectName": "berkeley",
+            "console": "externalTerminal"
+        },
+        {
+            "type": "java",
+            "name": "Launch c2",
+            "request": "launch",
+            "mainClass": "com.client.c2",
+            "projectName": "berkeley",
+            "console": "externalTerminal"
+        },
+        {
+            "type": "java",
+            "name": "Launch c1",
+            "request": "launch",
+            "mainClass": "com.client.c1",
+            "projectName": "berkeley",
+            "console": "externalTerminal"
+        },
+        {
+            "type": "java",
             "name": "Launch Client",
             "request": "launch",
             "mainClass": "com.client.Client",

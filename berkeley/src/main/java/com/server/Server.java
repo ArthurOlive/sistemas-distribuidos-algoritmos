@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.time.ZoneOffset;
@@ -19,12 +20,19 @@ import com.service.utils.ClockTime;
 public class Server {
 
     public static void main(String [] args) {
+
+        Random gerador = new Random(19700621);
         
         LocalDateTime time = LocalDateTime.now();
-        time = time.plusMinutes(Math.round(30) + 1);
+        time = time.plusMinutes(gerador.nextInt(30) + 1);
 
         Clock clock = new Clock();
         clock.setTime(time);
+
+        Cache cache = new Cache();
+        cache.getClients().add(3000);
+        cache.getClients().add(3001);
+        cache.getClients().add(3002);
 
         try {
 
@@ -40,7 +48,7 @@ public class Server {
             while (!serverSocket.isClosed()) {
 
                 Socket clientRequest = serverSocket.accept();
-                Middleware midd = new Middleware(clientRequest, clock);
+                Middleware midd = new Middleware(clientRequest, clock, cache);
     
                 Thread thread = new Thread(midd);
                 thread.start();

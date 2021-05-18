@@ -1,41 +1,41 @@
 package com.client;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.model.Clock;
-import com.model.Response;
-import com.model.TimerSicronize;
-import com.service.parse.ResponseParse;
-import com.service.parse.TimeSicronizeParse;
 import com.service.utils.ClockTime;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.util.Random;
 
-public class Client {
+public class Client implements Runnable {
 
-    public static void main(String [] args) {
+    private int port;
+
+    public Client (int port) {
+        this.port = port;
+    }
+
+    public void run () {
+
+        Random gerador = new Random(port);
 
         LocalDateTime timeClock = LocalDateTime.now();
-        timeClock = timeClock.plusMinutes(Math.round(30) + 1);
+        timeClock = timeClock.plusMinutes(gerador.nextInt(30) + 1);
 
         Clock clock = new Clock();
         clock.setTime(timeClock);
-
-        LocalDateTime date = LocalDateTime.now();
 
         try {
 
             System.out.println("Client is online...");
             System.out.println("Initial time client: " + clock.getTime());
 
-            ServerSocket serverSocket = new ServerSocket(3000);
+            ServerSocket serverSocket = new ServerSocket(port);
 
             ClockTime cronometro    = new ClockTime(clock);
             Thread threadCronometro = new Thread(cronometro);
@@ -52,7 +52,7 @@ public class Client {
 
                 Thread thread = new Thread(receiver);
                 thread.start();
-
+                
             }
 
             threadCronometro.interrupt();

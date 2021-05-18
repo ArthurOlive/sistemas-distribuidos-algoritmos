@@ -11,10 +11,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class Request {
-    public static JSONObject post(String router, JSONObject param) {
+    public static JSONObject post(String router, int port, JSONObject param) {
         Socket socketTo;
         try {
-            socketTo = new Socket("localhost", 8082);
+            socketTo = new Socket("localhost", port);
             DataOutputStream streamOut = new DataOutputStream(socketTo.getOutputStream());
             DataInputStream streamIn = new DataInputStream(socketTo.getInputStream());
             streamOut.writeUTF(router + "::" + param.toString());

@@ -4,7 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import com.model.Clock;
 import com.model.Response;
@@ -39,15 +41,13 @@ public class Receiver implements Runnable {
 
             resquest = streamIn.readUTF().split("::");
 
-            System.out.println(resquest[0]);
-
             String router = resquest[0];
             JSONObject param = (JSONObject) (new JSONParser()).parse(resquest[1]);
             
             Response response = null;
         
-        
             switch (router) {
+
                 case "getTime":
 
                     TimerSicronize time = new TimerSicronize();
@@ -57,6 +57,13 @@ public class Receiver implements Runnable {
 
                 case "setTime":
 
+                    TimerSicronize timeSicronize = parse.parser(resquest[1]);
+                    System.out.println("Deslocated: " + timeSicronize.getTimeDesclocated());
+
+                    clock.setTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(clock.getTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() + timeSicronize.getTimeDesclocated()), ZoneId.systemDefault()));
+                    System.out.println("New time: " + clock.getTime());
+
+                    streamOut.writeUTF(new JSONObject().toJSONString());
                     break;
 
                 default:
